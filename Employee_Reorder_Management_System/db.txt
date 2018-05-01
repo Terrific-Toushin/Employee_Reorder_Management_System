@@ -1,0 +1,779 @@
+package com.example.Menuitem;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+
+import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+
+import com.example.Admin.db_connection;
+import com.toedter.calendar.JDateChooser;
+
+public class EmployeeInfo extends JPanel{
+
+	db_connection db = new db_connection();
+
+	JPanel panelNorth =new JPanel();
+	JPanel panelNorthEast =new JPanel();
+	JPanel panelNorthEastNorth =new JPanel();
+	JPanel panelNorthEastSouth =new JPanel();
+	JPanel panelNorthEastSouthNorth =new JPanel();
+	JPanel panelNorthEastSouthSouth =new JPanel();
+
+
+	JPanel panelNorthWest =new JPanel();
+	JPanel panelNorthWestNorth =new JPanel();
+	JPanel panelNorthWestSouth =new JPanel();
+	JPanel panelNorthWestSouthNorth =new JPanel();
+	JPanel panelNorthWestSouthSouth =new JPanel();
+	JPanel panelNorthWestSouthSouthWest =new JPanel();
+	JPanel panelNorthWestSouthSouthWestNorth =new JPanel();
+	JPanel panelNorthWestSouthSouthWestSouth =new JPanel();
+	JPanel panelNorthWestSouthSouthEast =new JPanel();
+
+	JPanel panelNorthSouth =new JPanel();
+	JPanel panelSouth =new JPanel();
+
+	JLabel lblEastNorth = new JLabel(new ImageIcon("images/east_emp.png"));
+	JLabel lblWestNorth = new JLabel(new ImageIcon("images/west_emp.png"));
+
+	JButton btnUpload=new JButton("Upload",new ImageIcon("images/Upload.png"));
+	JLabel lblUpload=new JLabel();
+
+	JLabel lblFullName = new JLabel("Full Name: ");
+	JLabel lblEmployeeId = new JLabel("Employee Id: ");
+	JLabel lblGender = new JLabel("Gender: ");
+	JLabel lblMobile = new JLabel("Mobile No: ");
+	JLabel lblEmail = new JLabel("Email Id: ");
+	JLabel lblAddress = new JLabel("Address: ");
+
+	JLabel lblFullNameEmp = new JLabel("*");
+	JLabel lblEmployeeIdEmp = new JLabel("*");
+	JLabel lblGenderEmp = new JLabel("*");
+	JLabel lblMobileEmp = new JLabel("*");
+	JLabel lblEmailEmp = new JLabel("*");
+	JLabel lblAddressEmp = new JLabel("*");
+
+
+	JLabel lblDateofJoin=new JLabel("Date of Join:");
+	JLabel lblDesignation = new JLabel("Designation: ");
+	JLabel lblSalary = new JLabel("Salary: ");
+	JLabel lblOvertime = new JLabel("Overtime Per hour(TK): ");
+
+
+
+	JTextField txtSearchPer = new JTextField(20);
+	JTextField txtSearchAd = new JTextField(20);
+	JButton btnSearchPer = new JButton("Search",new ImageIcon("images/search.png"));
+	JButton btnSearchAd = new JButton("Search",new ImageIcon("images/search.png"));
+
+	JTextField txtFullName = new JTextField(17);
+	JTextField txtEmployeeId = new JTextField(17);
+	JTextField txtMobile = new JTextField(17);
+	JTextField txtEmail = new JTextField(17);
+	JTextArea txtAddress = new JTextArea(2,2);
+
+	JDateChooser dateJoin=new JDateChooser();
+	JTextField txtDesignation = new JTextField(17);
+	JTextField txtSalary = new JTextField(17);
+	JTextField txtOvertime = new JTextField(17);
+
+
+
+	JButton btnAdd=new JButton("Add",new ImageIcon("images/add.png"));
+	JButton btnEdit=new JButton("Edit",new ImageIcon("images/edit.png"));
+	JButton btnRefresh=new JButton("Refresh",new ImageIcon("images/refresh.png"));
+	JButton btnDelete=new JButton("Delete",new ImageIcon("images/delete.png"));
+
+
+
+	String s[]={"","Male","Female","Others"};
+	JComboBox cmbGender=new JComboBox(s);
+
+	JScrollPane scrollAddress=new JScrollPane(txtAddress,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+	GridBagConstraints c = new GridBagConstraints();
+
+
+	String column[]={"Employee Id","Full Name","Mobile No","Email Id","Designation","Salary","Overtime Per Hour(Tk)","Date of Join"};
+	Object row[][]={};
+	DefaultTableModel model=new DefaultTableModel(row,column);
+	JTable table=new JTable(model);
+	JScrollPane scrollTable=new JScrollPane(table,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
+
+	JFileChooser Chooser=new JFileChooser();
+	File file;
+	BufferedImage buffer;
+
+	int temp=0;
+	String s2;
+
+
+	public EmployeeInfo() {
+
+		try{
+
+			db.conect();
+		}
+		catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null,e);
+
+		}
+
+		setPreferredSize(new Dimension(1165,610));
+		cmp();
+		action();
+		allEmptyLevelFalse();
+		tabledata();
+		autoId();
+	}
+
+	private void cmp() {
+
+		setLayout(new BorderLayout());
+		add(panelNorth,BorderLayout.NORTH);
+		add(panelSouth,BorderLayout.SOUTH);
+
+		northwork();
+		southwork();
+
+	}
+
+	private void allEmptyLevelFalse() {
+
+		lblEmployeeIdEmp.setVisible(false);
+		lblFullNameEmp.setVisible(false);
+		lblMobileEmp.setVisible(false);
+		lblGenderEmp.setVisible(false);
+		lblEmailEmp.setVisible(false);
+		lblAddressEmp.setVisible(false);
+
+	}
+
+
+	private void northwork() {
+
+		FlowLayout flow = new FlowLayout();
+		FlowLayout flow1 = new FlowLayout();
+		FlowLayout flow2 = new FlowLayout();
+		FlowLayout flow3 = new FlowLayout();
+		FlowLayout flow4 = new FlowLayout();
+
+
+		lblFullName.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblEmployeeId.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblGender.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblMobile.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblEmail.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblAddress.setFont(new Font("Tahoma", Font.BOLD, 16));
+
+		lblFullNameEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblEmployeeIdEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblGenderEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblMobileEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblEmailEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblAddressEmp.setFont(new Font("Tahoma", Font.BOLD, 16));
+
+		lblFullNameEmp.setForeground(Color.red);
+		lblEmployeeIdEmp.setForeground(Color.red);
+		lblGenderEmp.setForeground(Color.red);
+		lblMobileEmp.setForeground(Color.red);
+		lblEmailEmp.setForeground(Color.red);
+		lblAddressEmp.setForeground(Color.red);
+
+		lblDesignation.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblSalary.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblOvertime.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblDateofJoin.setFont(new Font("Tahoma", Font.BOLD, 16));
+
+
+		txtFullName.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtEmployeeId.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtEmployeeId.setForeground(Color.red);
+		txtMobile.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		cmbGender.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+		txtDesignation.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtSalary.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtOvertime.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		dateJoin.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+
+		btnSearchPer.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnSearchAd.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnUpload.setFont(new Font("Tahoma", Font.BOLD, 13));
+		btnAdd.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnEdit.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnRefresh.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnDelete.setFont(new Font("Tahoma", Font.BOLD, 14));
+
+
+		panelNorth.setPreferredSize(new Dimension(1,396));
+		panelNorth.setLayout(new BorderLayout());
+
+		panelNorth.add(panelNorthEast,BorderLayout.EAST);
+		panelNorth.add(panelNorthWest,BorderLayout.WEST);
+		panelNorth.add(panelNorthSouth,BorderLayout.SOUTH);
+
+
+
+		northWestwork();
+		northEastwork();
+		northSouthwork();
+
+	}
+
+
+
+
+
+	private void northWestwork() {
+
+		FlowLayout flow =new FlowLayout();
+		FlowLayout flow1 =new FlowLayout();
+		FlowLayout flow2 =new FlowLayout();
+
+		panelNorthWest.setPreferredSize(new Dimension(687,1));
+		panelNorthWest.setLayout(new BorderLayout());
+		panelNorthWest.add(panelNorthWestNorth,BorderLayout.NORTH);
+		panelNorthWest.add(panelNorthWestSouth,BorderLayout.SOUTH);
+
+		panelNorthWestNorth.setPreferredSize(new Dimension(1,42));
+		panelNorthWestNorth.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+
+		panelNorthWestNorth.setLayout(flow);
+		panelNorthWestNorth.add(lblWestNorth);
+
+		panelNorthWestSouth.setPreferredSize(new Dimension(1,300));
+
+		panelNorthWestSouth.setLayout(new BorderLayout());
+		//panelNorthWestSouth.setBorder(BorderFactory.createLineBorder(Color.black, 1, true));
+		panelNorthWestSouth.add(panelNorthWestSouthNorth,BorderLayout.NORTH);
+		panelNorthWestSouth.add(panelNorthWestSouthSouth,BorderLayout.SOUTH);
+
+
+		panelNorthWestSouthNorth.setPreferredSize(new Dimension(1,45));
+		panelNorthWestSouthSouth.setPreferredSize(new Dimension(1,251));
+
+		panelNorthWestSouthNorth.setLayout(new GridBagLayout());
+		txtSearchPer.setBorder(BorderFactory.createRaisedBevelBorder());
+		txtSearchPer.setFont(new Font("Tahoma",Font.BOLD,15));
+		txtSearchPer.setForeground(Color.BLUE);
+
+		c.gridx=0;
+		c.gridy=0;
+		c.insets=new Insets(1, 5, 1, 5);
+		c.fill=GridBagConstraints.BOTH;
+		panelNorthWestSouthNorth.add(txtSearchPer,c);
+		c.gridx=1;
+		c.gridy=0;
+		panelNorthWestSouthNorth.add(btnSearchPer,c);
+
+		panelNorthWestSouthSouth.setLayout(new BorderLayout());
+		panelNorthWestSouthSouth.setBorder(BorderFactory.createLoweredBevelBorder());
+		panelNorthWestSouthSouth.add(panelNorthWestSouthSouthWest,BorderLayout.WEST);
+		panelNorthWestSouthSouth.add(panelNorthWestSouthSouthEast,BorderLayout.EAST);
+
+		panelNorthWestSouthSouthWest.setPreferredSize(new Dimension(200,1));
+		panelNorthWestSouthSouthEast.setPreferredSize(new Dimension(487,1));
+
+
+		panelNorthWestSouthSouthWest.setLayout(new BorderLayout());
+		panelNorthWestSouthSouthWest.add(panelNorthWestSouthSouthWestNorth,BorderLayout.NORTH);
+		panelNorthWestSouthSouthWest.add(panelNorthWestSouthSouthWestSouth,BorderLayout.SOUTH);
+
+
+		panelNorthWestSouthSouthWestNorth.setPreferredSize(new Dimension(1,196));
+		panelNorthWestSouthSouthWestSouth.setPreferredSize(new Dimension(1,52));
+		panelNorthWestSouthSouthWestNorth.setLayout(flow1);
+		panelNorthWestSouthSouthWestSouth.setLayout(flow2);
+
+		lblUpload.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+		lblUpload.setPreferredSize(new Dimension(160,170));
+
+		panelNorthWestSouthSouthWestNorth.add(lblUpload);
+		panelNorthWestSouthSouthWestSouth.add(btnUpload);
+
+
+		panelNorthWestSouthSouthEast.setLayout(new GridBagLayout());
+
+		c.insets=new Insets(1, 3, 1, 4);
+		c.fill=GridBagConstraints.BOTH;
+
+		c.gridx=0;
+		c.gridy=0;
+		panelNorthWestSouthSouthEast.add(lblEmployeeId,c);
+
+		c.gridx=1;
+		c.gridy=0;
+		panelNorthWestSouthSouthEast.add(txtEmployeeId,c);
+
+		c.gridx=2;
+		c.gridy=0;
+		panelNorthWestSouthSouthEast.add(lblEmployeeIdEmp,c);
+
+		c.gridx=0;
+		c.gridy=1;
+		panelNorthWestSouthSouthEast.add(lblFullName,c);
+
+		c.gridx=1;
+		c.gridy=1;
+		panelNorthWestSouthSouthEast.add(txtFullName,c);
+
+		c.gridx=2;
+		c.gridy=1;
+		panelNorthWestSouthSouthEast.add(lblFullNameEmp,c);
+
+		c.gridx=0;
+		c.gridy=2;
+		panelNorthWestSouthSouthEast.add(lblMobile,c);
+
+		c.gridx=1;
+		c.gridy=2;
+		panelNorthWestSouthSouthEast.add(txtMobile,c);
+
+		c.gridx=2;
+		c.gridy=2;
+		panelNorthWestSouthSouthEast.add(lblMobileEmp,c);
+
+		c.gridx=0;
+		c.gridy=3;
+		panelNorthWestSouthSouthEast.add(lblEmail,c);
+
+		c.gridx=1;
+		c.gridy=3;
+		panelNorthWestSouthSouthEast.add(txtEmail,c);
+
+		c.gridx=2;
+		c.gridy=3;
+		panelNorthWestSouthSouthEast.add(lblEmailEmp,c);
+
+		c.gridx=0;
+		c.gridy=4;
+		panelNorthWestSouthSouthEast.add(lblAddress,c);
+
+		c.gridx=1;
+		c.gridy=4;
+		panelNorthWestSouthSouthEast.add(scrollAddress,c);
+
+		c.gridx=2;
+		c.gridy=4;
+		panelNorthWestSouthSouthEast.add(lblAddressEmp,c);
+
+		c.gridx=0;
+		c.gridy=5;
+		panelNorthWestSouthSouthEast.add(lblGender,c);
+
+		c.gridx=1;
+		c.gridy=5;
+		panelNorthWestSouthSouthEast.add(cmbGender,c);
+
+		c.gridx=2;
+		c.gridy=5;
+		panelNorthWestSouthSouthEast.add(lblGenderEmp,c);
+
+		flow1.setVgap(24);
+		flow2.setVgap(0);
+		flow.setVgap(0);
+
+
+	}
+
+
+
+	private void northEastwork() {
+
+		FlowLayout flow =new FlowLayout();
+
+		panelNorthEast.setPreferredSize(new Dimension(470,1));
+		panelNorthEast.setLayout(new BorderLayout());
+		panelNorthEast.add(panelNorthEastNorth,BorderLayout.NORTH);
+		panelNorthEast.add(panelNorthEastSouth,BorderLayout.SOUTH);
+
+		panelNorthEastNorth.setPreferredSize(new Dimension(1,42));
+		panelNorthEastNorth.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+
+		panelNorthEastNorth.setLayout(flow);
+		panelNorthEastNorth.add(lblEastNorth);
+
+		panelNorthEastSouth.setPreferredSize(new Dimension(1,300));
+		panelNorthEastSouth.setLayout(new BorderLayout());
+
+		panelNorthEastSouth.add(panelNorthEastSouthNorth,BorderLayout.NORTH);
+		panelNorthEastSouth.add(panelNorthEastSouthSouth,BorderLayout.SOUTH);
+
+
+		panelNorthEastSouthNorth.setPreferredSize(new Dimension(1,45));
+		panelNorthEastSouthSouth.setPreferredSize(new Dimension(1,251));
+
+		panelNorthEastSouthNorth.setLayout(new GridBagLayout());
+		txtSearchAd.setBorder(BorderFactory.createRaisedBevelBorder());
+		txtSearchAd.setFont(new Font("Tahoma",Font.BOLD,15));
+		txtSearchAd.setForeground(Color.BLUE);
+
+		c.gridx=0;
+		c.gridy=0;
+		c.insets=new Insets(1, 5, 1, 5);
+		c.fill=GridBagConstraints.BOTH;
+		panelNorthEastSouthNorth.add(txtSearchAd,c);
+		c.gridx=1;
+		c.gridy=0;
+		panelNorthEastSouthNorth.add(btnSearchAd,c);
+
+		panelNorthEastSouthSouth.setBorder(BorderFactory.createLoweredBevelBorder());
+
+		panelNorthEastSouthSouth.setLayout(new GridBagLayout());
+
+		c.insets=new Insets(5, 5, 5, 5);
+		c.fill=GridBagConstraints.BOTH;
+
+		c.gridx=0;
+		c.gridy=0;
+		panelNorthEastSouthSouth.add(lblDesignation,c);
+
+		c.gridx=1;
+		c.gridy=0;
+		panelNorthEastSouthSouth.add(txtDesignation,c);
+
+		c.gridx=0;
+		c.gridy=1;
+		panelNorthEastSouthSouth.add(lblSalary,c);
+
+		c.gridx=1;
+		c.gridy=1;
+		panelNorthEastSouthSouth.add(txtSalary,c);
+
+		c.gridx=0;
+		c.gridy=2;
+		panelNorthEastSouthSouth.add(lblOvertime,c);
+
+		c.gridx=1;
+		c.gridy=2;
+		panelNorthEastSouthSouth.add(txtOvertime,c);
+
+		c.gridx=0;
+		c.gridy=3;
+		panelNorthEastSouthSouth.add(lblDateofJoin,c);
+
+		c.gridx=1;
+		c.gridy=3;
+		panelNorthEastSouthSouth.add(dateJoin,c);
+		dateJoin.setDateFormatString("yyy-MM-dd");
+
+		flow.setVgap(0);
+	}
+
+	private void northSouthwork() {
+		FlowLayout flow = new FlowLayout();
+
+		panelNorthSouth.setPreferredSize(new Dimension(1,50));
+		panelNorthSouth.setBorder(BorderFactory.createRaisedBevelBorder());
+
+		panelNorthSouth.setLayout(flow);
+		panelNorthSouth.add(btnAdd);
+		panelNorthSouth.add(btnEdit);
+		panelNorthSouth.add(btnRefresh);
+		panelNorthSouth.add(btnDelete);
+
+		flow.setHgap(20);
+
+		//panelNorthSouth.setBackground(Color.yellow);
+	}
+
+	private void southwork() {
+		FlowLayout flow = new FlowLayout();
+		panelSouth.setPreferredSize(new Dimension(1,210));
+		panelSouth.setLayout(flow);
+		panelSouth.setBorder(BorderFactory.createLoweredBevelBorder());
+		scrollTable.setPreferredSize(new Dimension(1157,200));
+		panelSouth.add(scrollTable);
+
+		flow.setVgap(3);
+
+		//table header center alignment...
+		TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
+		JLabel label = (JLabel)renderer;
+		label.setHorizontalAlignment(JLabel.CENTER);
+
+		//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.getColumnModel().getColumn(0).setPreferredWidth(60);
+		table.getColumnModel().getColumn(1).setPreferredWidth(200);
+		table.getColumnModel().getColumn(2).setPreferredWidth(100);
+		table.getColumnModel().getColumn(3).setPreferredWidth(210);
+		table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table.getColumnModel().getColumn(5).setPreferredWidth(90);
+		table.getColumnModel().getColumn(6).setPreferredWidth(120);
+		table.getColumnModel().getColumn(7).setPreferredWidth(90);
+		//panelSouth.setBackground(Color.green);
+	}
+
+
+	private void autoId() {
+
+		try{
+			String s="select ifnull(max(cast(substring(employeeId, locate('-',employeeId)+1,length(employeeId)- locate('-',employeeId))as UNSIGNED)),0)+1 as employeeId from tbl_info";
+			ResultSet rs=db.sta.executeQuery(s);
+			while(rs.next()){
+				txtEmployeeId.setText("emp-"+rs.getString("employeeId"));
+				txtEmployeeId.setEditable(false);
+			}
+		}
+		catch(Exception exp){
+			JOptionPane.showMessageDialog(null, exp);
+		}
+	}
+
+
+
+	protected boolean validation() {
+		if(!txtEmployeeId.getText().trim().isEmpty()){
+			if(!txtFullName.getText().trim().isEmpty()){
+				if(!txtMobile.getText().trim().isEmpty()){
+					if(!txtEmail.getText().trim().isEmpty()){
+						if(!txtAddress.getText().trim().isEmpty()){
+							if(cmbGender.getSelectedIndex()!=0){
+								if(!txtDesignation.getText().trim().isEmpty()){
+									if(!txtSalary.getText().trim().isEmpty()){
+										if(!txtOvertime.getText().trim().isEmpty()){
+											if(dateJoin.getDate()!=null){
+												if(temp==1){
+													return true;
+												}
+												else{
+													JOptionPane.showMessageDialog(null, "Please upload a picture","information..",JOptionPane.INFORMATION_MESSAGE);
+												}
+											}
+											else{
+												JOptionPane.showMessageDialog(null, "Please select Date","information..",JOptionPane.INFORMATION_MESSAGE);
+											}
+										}
+										else{
+											JOptionPane.showMessageDialog(null, "Please enter Overtime","information..",JOptionPane.INFORMATION_MESSAGE);
+										}
+									}
+									else{
+										JOptionPane.showMessageDialog(null, "Please enter Salary","information..",JOptionPane.INFORMATION_MESSAGE);
+									}
+								}
+								else{
+									JOptionPane.showMessageDialog(null, "Please enter Designation","information..",JOptionPane.INFORMATION_MESSAGE);
+								}
+							}
+							else{
+								JOptionPane.showMessageDialog(null, "Please select Gender","information..",JOptionPane.INFORMATION_MESSAGE);
+							}
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "Please enter Address","information..",JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "Please enter Email","information..",JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "Please enter Mobile","information..",JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Please enter Fullname","information..",JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+		else{
+			JOptionPane.showMessageDialog(null, "Please enter Employeeid","information..",JOptionPane.INFORMATION_MESSAGE);
+		}
+		return false;
+	}
+
+
+	private boolean checkConfirmed(String s) {
+
+		int a=JOptionPane.showConfirmDialog(null, "Sure To "+s,"Confirmation...",JOptionPane.YES_NO_OPTION);
+		if(a==JOptionPane.YES_OPTION){
+			return true;
+		}
+		return false;
+	}
+
+
+	private void insertdata() {
+		try{
+
+			File file2=new File("D:\\Emp_Management_System\\Employee_image");
+			if(!file2.isDirectory()){
+				file2.mkdirs();
+			}
+			buffer=ImageIO.read(file);
+
+			File fileToWrite=new File(file2.getPath()+"\\"+txtEmployeeId.getText().trim()+".jpg");
+
+			if(fileToWrite.exists()){
+				fileToWrite.delete();
+			}
+			ImageIO.write(buffer, "jpg", fileToWrite);
+			String path=file2.getPath()+"\\"+txtEmployeeId.getText().trim()+".jpg";
+			String s1=path.replace("\\", "#");
+
+
+			String joindate=new SimpleDateFormat("YYYY-MM-dd").format(dateJoin.getDate());
+			String sql =  "insert into tbl_info(employeeId,fullName,mobile,email,address,gender,image,designation,salary,overtimeTk,joinDate) values('"+txtEmployeeId.getText().trim()+"','"+txtFullName.getText().trim()+"','"+txtMobile.getText().trim()+"','"+txtEmail.getText().trim()+"','"+txtAddress.getText().trim()+"','"+cmbGender.getSelectedItem()+"','"+s1+"','"+txtDesignation.getText().trim()+"','"+txtSalary.getText().trim()+"','"+txtOvertime.getText().trim()+"','2016-2-2q'";
+			
+			db.sta.executeUpdate(sql);
+
+			autoId();
+			txtClear();
+			JOptionPane.showMessageDialog(null, "All Information Saved Successfully","Confirmation...",JOptionPane.INFORMATION_MESSAGE);
+		}
+		catch(Exception exp){
+			JOptionPane.showMessageDialog(null, exp);
+		}
+	}
+
+
+	private void tabledata() {
+
+		for(int a=model.getRowCount()-1;a>=0;a--)
+		{
+			model.removeRow(a);
+		}
+
+		String s="select employeeId,fullName,mobile,email,designation,salary,overtimeTk,joinDate,cast(substring(employeeId,locate('-',employeeId)+1,LENGTH(employeeId)-locate('-',employeeId)) as unsigned) as ord from tbl_info order by ord";
+		try{
+			ResultSet rs= db.sta.executeQuery(s);
+			while(rs.next()){
+				String employeeId=rs.getString("employeeId");
+				String fullName=rs.getString("fullName");
+				String mobile=rs.getString("mobile");
+				String email=rs.getString("email");
+				String designation=rs.getString("designation");
+				String salary=rs.getString("salary");
+				String overtimeTk=rs.getString("overtimeTk");
+				String joinDate=rs.getString("joinDate");
+				
+
+				model.addRow(new Object[]{employeeId,fullName,mobile,email,designation,salary,overtimeTk,joinDate});
+			}
+		}
+		catch(Exception exp){
+			JOptionPane.showMessageDialog(null, exp);
+		}
+
+	}
+
+	protected void txtClear() {
+
+		txtEmployeeId.setText("");
+		txtFullName.setText("");
+		txtMobile.setText("");
+		txtEmail.setText("");
+		txtAddress.setText("");
+		cmbGender.setSelectedIndex(0);
+		txtDesignation.setText("");
+		txtSalary.setText("");
+		lblUpload.setIcon(new ImageIcon(""));
+		txtOvertime.setText("");
+		//dateJoin.setDate(new java.util.Date());
+		temp=0;
+		dateJoin.setDate(null);
+		txtSearchAd.setText("");
+		txtSearchPer.setText("");
+	}
+
+
+
+	private void UploadAction()
+	{
+
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("image","jpg","png","gif","jpeg");
+		Chooser.addChoosableFileFilter(filter);
+		Chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+		Chooser.setDialogTitle("Please upload your images..............");
+		if(Chooser.showDialog(this, "Upload")!=JFileChooser.APPROVE_OPTION)
+		{
+			return;
+		}
+		file=Chooser.getSelectedFile();
+		Image size=Toolkit.getDefaultToolkit().getImage(file.getPath());
+		Image resize=size.getScaledInstance(lblUpload.getWidth(), lblUpload.getHeight(), Image.SCALE_DEFAULT);
+		ImageIcon icon=new ImageIcon(resize);
+		lblUpload.setIcon(icon);
+		temp=1;
+
+	}
+
+
+	private void SaveButtonEvent() {
+
+		if(validation())
+		{
+			if(checkConfirmed("Save"))
+			{
+				insertdata();
+				tabledata();
+			}
+		}
+	}
+
+
+	private void action() {
+
+		btnUpload.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				UploadAction();
+			}
+		});	
+
+
+		btnAdd.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				//SaveButtonEvent();
+			}
+		});
+	}
+
+}
